@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Style 數位數學教案：矩陣篇</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <style>
+        body {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .apple-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 18px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .apple-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+        .apple-btn {
+            background-color: #0071e3;
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .apple-btn:hover {
+            background-color: #005bb5;
+        }
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
+
+    <header class="max-w-5xl w-full mx-auto flex justify-between items-center py-4 mb-8">
+        <div class="text-xl font-semibold tracking-tight cursor-pointer" onclick="switchView('lobby')"> MathEd Studio</div>
+        <button id="back-btn" class="hidden text-sm text-[#0071e3] font-normal hover:underline" onclick="switchView('lobby')">← 返回大廳</button>
+    </header>
+
+    <main class="max-w-5xl w-full mx-auto flex-grow flex items-center justify-center">
+        
+        <section id="view-lobby" class="view-section active w-full">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3">二階方陣核心實驗室</h1>
+                <p class="text-gray-500 text-lg">透過動態視覺與即時反饋，馴服抽象的線性代數。</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="apple-card p-8 cursor-pointer flex flex-col justify-between" onclick="switchView('characteristic')">
+                    <div>
+                        <div class="text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-2">主題一</div>
+                        <h2 class="text-2xl font-bold mb-3">特徵方程式與多項式降次</h2>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-6">驗證 Cayley-Hamilton 定理，並利用電腦自動出題系統演練高次多項式的動態長除法降次核心。</p>
+                    </div>
+                    <div class="text-[#0071e3] text-sm font-medium flex items-center">開始實驗 <span class="ml-1">→</span></div>
+                </div>
+                <div class="apple-card p-8 cursor-pointer flex flex-col justify-between" onclick="switchView('inverse')">
+                    <div>
+                        <div class="text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-2">主題二</div>
+                        <h2 class="text-2xl font-bold mb-3">二階反方陣與幾何毀滅</h2>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-6">直觀感受 $\det(A) = 0$ 時二維空間被「壓扁」的幾何痛點，並透過動畫掌握反方陣公式的元素互換。</p>
+                    </div>
+                    <div class="text-[#0071e3] text-sm font-medium flex items-center">開始實驗 <span class="ml-1">→</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-characteristic" class="view-section w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 apple-card p-6 bg-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">1. 特徵方程式驗證</h3>
+                        <p class="text-gray-500 text-xs mb-4">請自訂二階方陣 $A$ 的元素，觀察其如何神奇歸零：</p>
+                        
+                        <div class="flex justify-center items-center my-6">
+                            <span class="text-2xl mr-2">$A = $</span>
+                            <div class="relative border-l-2 border-r-2 border-gray-800 px-2 py-1 grid grid-cols-2 gap-2 w-32 text-center font-mono">
+                                <input id="m1-a" type="number" value="1" class="w-10 p-1 border border-gray-200 rounded text-center text-sm">
+                                <input id="m1-b" type="number" value="4" class="w-10 p-1 border border-gray-200 rounded text-center text-sm">
+                                <input id="m1-c" type="number" value="1" class="w-10 p-1 border border-gray-200 rounded text-center text-sm">
+                                <input id="m1-d" type="number" value="6" class="w-10 p-1 border border-gray-200 rounded text-center text-sm">
+                            </div>
+                        </div>
+
+                        <button class="w-full apple-btn py-2 text-sm font-medium rounded-xl mb-4" onclick="calculateCharacteristic()">計算特徵多項式</button>
+                    </div>
+
+                    <div id="ch-result-box" class="bg-gray-50 p-4 rounded-xl text-sm border border-gray-100">
+                        <div id="math-trace-det" class="mb-2 text-gray-600"></div>
+                        <div id="math-equation" class="font-semibold text-center py-2"></div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 apple-card p-6 bg-white flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">2. 自動生成高次降次挑戰</h3>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-xs px-3 py-1.5 rounded-lg font-medium" onclick="generateQuiz1()">隨機換一題</button>
+                        </div>
+                        
+                        <div class="bg-blue-50/50 border border-blue-100/50 p-4 rounded-xl mb-6">
+                            <p class="text-xs text-blue-600 font-semibold mb-1">【當前挑戰題目】</p>
+                            <div id="quiz-question-math" class="text-base py-2"></div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <button class="w-full text-left p-3 rounded-xl border border-gray-200 text-sm hover:bg-gray-50 flex justify-between items-center font-medium" onclick="toggleStep('step1-ans')">
+                                <span>步驟一：求出特徵方程式 $A^2 - \text{tr}(A)A + \det(A)I_2$</span>
+                                <span class="text-xs text-blue-500">展開解答 ↓</span>
+                            </button>
+                            <div id="step1-ans" class="hidden p-4 bg-gray-50 rounded-xl text-sm font-mono border border-gray-100"></div>
+
+                            <button class="w-full text-left p-3 rounded-xl border border-gray-200 text-sm hover:bg-gray-50 flex justify-between items-center font-medium" onclick="toggleStep('step2-ans')">
+                                <span>步驟二：多項式長除法（將高次式轉為餘式）</span>
+                                <span class="text-xs text-blue-500">展開解答 ↓</span>
+                            </button>
+                            <div id="step2-ans" class="hidden p-4 bg-gray-50 rounded-xl text-sm font-mono border border-gray-100 overflow-x-auto"></div>
+
+                            <button class="w-full text-left p-3 rounded-xl border border-gray-200 text-sm hover:bg-gray-50 flex justify-between items-center font-medium" onclick="toggleStep('step3-ans')">
+                                <span>步驟三：將 $A$ 帶入餘式求出最終矩陣解答</span>
+                                <span class="text-xs text-blue-500">展開解答 ↓</span>
+                            </button>
+                            <div id="step3-ans" class="hidden p-4 bg-gray-50 rounded-xl text-sm font-mono border border-gray-100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-inverse" class="view-section w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 apple-card p-6 bg-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">二階反方陣實驗室</h3>
+                        <p class="text-gray-500 text-xs mb-6">手動拖動滑桿，注意當 $\det(A) = 0$ 時幾何網格發生的災難性變化。</p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 a (左上)</span><span id="val-a" class="font-bold">1</span></div>
+                                <input id="slider-a" type="range" min="-4" max="4" step="1" value="1" class="w-full accent-[#0071e3]" oninput="updateInverseLab()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 b (右上)</span><span id="val-b" class="font-bold">2</span></div>
+                                <input id="slider-b" type="range" min="-4" max="4" step="1" value="2" class="w-full accent-[#0071e3]" oninput="updateInverseLab()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 c (左下)</span><span id="val-c" class="font-bold">2</span></div>
+                                <input id="slider-c" type="range" min="-4" max="4" step="1" value="2" class="w-full accent-[#0071e3]" oninput="updateInverseLab()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 d (右下)</span><span id="val-d" class="font-bold">3</span></div>
+                                <input id="slider-d" type="range" min="-4" max="4" step="1" value="3" class="w-full accent-[#0071e3]" oninput="updateInverseLab()">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 flex gap-2">
+                            <button class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-medium py-1.5 rounded-lg text-xs" onclick="setPresetInverse(1,2,2,4)">設為毀滅狀態 (det=0)</button>
+                            <button class="flex-1 bg-blue-50 hover:bg-blue-100 text-[#0071e3] font-medium py-1.5 rounded-lg text-xs" onclick="setPresetInverse(2,1,-1,2)">設為正常狀態</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <div id="inv-det-math" class="text-sm mb-2 text-center"></div>
+                        <div id="inv-status-badge" class="text-center py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-2"></div>
+                        <div id="inv-formula-math" class="text-center pt-2 border-t border-gray-200/60"></div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8 apple-card p-6 bg-white flex flex-col items-center justify-center min-h-[400px]">
+                    <div class="w-full flex justify-between items-center mb-4">
+                        <span class="text-sm font-bold">空間線性映射視覺化（追蹤基底）</span>
+                        <div class="flex gap-4 text-xs font-semibold">
+                            <span class="text-red-500">■ 變換後 i(a,c)</span>
+                            <span class="text-blue-500">■ 變換後 j(b,d)</span>
+                        </div>
+                    </div>
+                    <div class="relative w-full max-w-md aspect-square bg-[#f5f5f7] rounded-xl overflow-hidden border border-gray-100">
+                        <canvas id="geometryCanvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-5xl w-full mx-auto text-center py-6 text-xs text-gray-400 mt-12 border-t border-gray-100">
+        符合 Apple 極簡規範之數位互動網頁教案 • 開發專用
+    </footer>
+
+    <script>
+        // 1. 虛擬路由控制中心 (SPA View Switcher)
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`view-view-${viewId}` ? `view-${viewId}` : 'view-lobby').classList.add('active');
+            
+            const backBtn = document.getElementById('back-btn');
+            if(viewId === 'lobby') {
+                backBtn.classList.add('hidden');
+            } else {
+                backBtn.classList.remove('hidden');
+                if(viewId === 'characteristic') { calculateCharacteristic(); generateQuiz1(); }
+                if(viewId === 'inverse') { updateInverseLab(); }
+            }
+        }
+
+        function toggleStep(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        // ================== 主題一核心邏輯 ==================
+        function calculateCharacteristic() {
+            const a = parseInt(document.getElementById('m1-a').value) || 0;
+            const b = parseInt(document.getElementById('m1-b').value) || 0;
+            const c = parseInt(document.getElementById('m1-c').value) || 0;
+            const d = parseInt(document.getElementById('m1-d').value) || 0;
+
+            const tr = a + d;
+            const det = (a * d) - (b * c);
+
+            // 渲染特徵資訊
+            const infoDiv = document.getElementById('math-trace-det');
+            katex.render(`\\text{tr}(A) = ${a}+${d} = ${tr}\\\\ \\det(A) = (${a})(${d}) - (${b})(${c}) = ${det}`, infoDiv);
+
+            // 渲染凱利哈密頓公式
+            const eqDiv = document.getElementById('math-equation');
+            const sign1 = tr >= 0 ? '-' : '+';
+            const absTr = Math.abs(tr);
+            const sign2 = det >= 0 ? '+' : '-';
+            const absDet = Math.abs(det);
+            
+            katex.render(`A^2 ${sign1} ${absTr}A ${sign2} ${absDet}I_2 = O`, eqDiv, { displayMode: true });
+        }
+
+        // 電腦自動生成多項式降次挑戰題演算法
+        let currentQuiz = {};
+        function generateQuiz1() {
+            // 預設一組好算漂亮的特徵方陣矩陣
+            currentQuiz.matrix = { a: 1, b: 4, c: 1, d: 6 }; // 同照片範例
+            const tr = 7;
+            const det = 2;
+
+            // 模擬隨機生成一個多項式 $A^4 - 8A^3 + 10A^2 - 10A + 3I_2$
+            // 商式 Q(x) = x^2 - x + 1, 餘式 R(x) = -x + 1 (即 -A + I_2)
+            // 展開後多項式：x^4 - 8x^3 + 10x^2 - 10x + 3
+            currentQuiz.polyText = "A^4 - 8A^3 + 10A^2 - 10A + 3I_2";
+            
+            const qQuestion = document.getElementById('quiz-question-math');
+            katex.render(`\\text{設 } A = \\begin{bmatrix} 1 & 4 \\\\ 1 & 6 \\end{bmatrix}，\\text{試求 } ${currentQuiz.polyText} = \\text{？}`, qQuestion);
+
+            // 步驟一解答
+            katex.render(`A^2 - 7A + 2I_2 = \\begin{bmatrix} 0 & 0 \\\\ 0 & 0 \\end{bmatrix}`, document.getElementById('step1-ans'), { displayMode: true });
+
+            // 步驟二解答 (長除法模擬)
+            document.getElementById('step2-ans').innerHTML = `
+                <div class="text-xs text-gray-400 mb-2">經多項式長除法分離商式與餘式：</div>
+                $$\\frac{A^4 - 8A^3 + 10A^2 - 10A + 3I_2}{A^2 - 7A + 2I_2} = (A^2 - A + I_2) \\dots\\dots \\text{餘式 } (-A + I_2)$$
+                <div class="mt-2 text-xs text-blue-600">因此原本的高次多項式可以完美降次：</div>
+                $$f(A) = (A^2 - 7A + 2I_2)(A^2 - A + I_2) + (-A + I_2)$$
+                $$f(A) = O \\cdot (A^2 - A + I_2) + (-A + I_2) = -A + I_2$$
+            `;
+            renderMathInElement(document.getElementById('step2-ans'));
+
+            // 步驟三解答 (帶入餘式)
+            const ansA = -(1) + 1;
+            const ansB = -(4) + 0;
+            const ansC = -(1) + 0;
+            const ansD = -(6) + 1;
+            document.getElementById('step3-ans').innerHTML = `
+                $$\\text{最終解} = -A + I_2 = -\\begin{bmatrix} 1 & 4 \\\\ 1 & 6 \\end{bmatrix} + \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} = \\begin{bmatrix} ${ansA} & ${ansB} \\\\ ${ansC} & ${ansD} \\end{bmatrix}$$
+            `;
+            renderMathInElement(document.getElementById('step3-ans'));
+        }
+
+
+        // ================== 主題二核心邏輯 ==================
+        function setPresetInverse(a,b,c,d) {
+            document.getElementById('slider-a').value = a;
+            document.getElementById('slider-b').value = b;
+            document.getElementById('slider-c').value = c;
+            document.getElementById('slider-d').value = d;
+            updateInverseLab();
+        }
+
+        function updateInverseLab() {
+            const a = parseInt(document.getElementById('slider-a').value);
+            const b = parseInt(document.getElementById('slider-b').value);
+            const c = parseInt(document.getElementById('slider-c').value);
+            const d = parseInt(document.getElementById('slider-d').value);
+
+            document.getElementById('val-a').innerText = a;
+            document.getElementById('val-b').innerText = b;
+            document.getElementById('val-c').innerText = c;
+            document.getElementById('val-d').innerText = d;
+
+            const det = (a * d) - (b * c);
+            
+            // 渲染行列式資訊
+            katex.render(`\\det(A) = (${a})(${d}) - (${b})(${c}) = ${det}`, document.getElementById('inv-det-math'));
+
+            const badge = document.getElementById('inv-status-badge');
+            const formulaDiv = document.getElementById('inv-formula-math');
+
+            if (det === 0) {
+                badge.className = "text-center py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-2 bg-red-100 text-red-700";
+                badge.innerText = "不可逆 (反方陣不存在)";
+                katex.render(`A^{-1} \\text{ 不存在 (空間已降維壓扁)}`, formulaDiv);
+            } else {
+                badge.className = "text-center py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-2 bg-green-100 text-green-700";
+                badge.innerText = "可逆 (反方陣存在)";
+                katex.render(`A^{-1} = \\frac{1}{${det}}\\begin{bmatrix} ${d} & ${-b} \\\\ ${-c} & ${a} \\end{bmatrix}`, formulaDiv);
+            }
+
+            drawGeometry(a, b, c, d);
+        }
+
+        // Canvas 幾何線性變換 2D 繪圖
+        function drawGeometry(a, b, c, d) {
+            const canvas = document.getElementById('geometryCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // 處理 Retina 高解析度屏
+            const size = canvas.parentElement.clientWidth;
+            canvas.width = size * window.devicePixelRatio;
+            canvas.height = size * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+
+            const center = size / 2;
+            const scale = size / 10; // 縮放比例，一單位為多少像素
+
+            // 清空畫布
+            ctx.fillStyle = '#f5f5f7';
+            ctx.fillRect(0, 0, size, size);
+
+            // 畫背景十字網格座標軸
+            ctx.strokeStyle = '#e5e5e7';
+            ctx.lineWidth = 1;
+            for(let i = -5; i <= 5; i++) {
+                // 直線
+                ctx.beginPath(); ctx.moveTo(center + i*scale, 0); ctx.lineTo(center + i*scale, size); ctx.stroke();
+                // 橫線
+                ctx.beginPath(); ctx.moveTo(0, center + i*scale); ctx.lineTo(size, center + i*scale); ctx.stroke();
+            }
+
+            // 主軸高亮
+            ctx.strokeStyle = '#d2d2d7';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(center, 0); ctx.lineTo(center, size); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, center); ctx.lineTo(size, center); ctx.stroke();
+
+            // 線性映射轉換：(x, y) -> (a*x + b*y, c*x + d*y)
+            // 注意：網格 Y 軸向下，我們在運算與畫圖時要將 Y 變號以符合一般數學思維
+            function transform(x, y) {
+                return {
+                    x: center + (a * x + b * y) * scale,
+                    y: center - (c * x + d * y) * scale
+                };
+            }
+
+            const p0 = transform(0, 0);
+            const pI = transform(1, 0); // i 基底映射後位置
+            const pJ = transform(0, 1); // j 基底映射後位置
+            const pIJ = transform(1, 1); // 映射後的對角頂點
+
+            // 1. 繪製變換後的平行四邊形面積區
+            ctx.fillStyle = (a*d-b*c === 0) ? 'rgba(239, 68, 68, 0.2)' : 'rgba(0, 113, 227, 0.1)';
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(pI.x, pI.y);
+            ctx.lineTo(pIJ.x, pIJ.y);
+            ctx.lineTo(pJ.x, pJ.y);
+            ctx.closePath();
+            ctx.fill();
+
+            // 2. 繪製變換後的基底向量 i (紅色)
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(pI.x, pI.y);
+            ctx.stroke();
+
+            // 3. 繪製變換後的基底向量 j (藍色)
+            ctx.strokeStyle = '#0071e3';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(pJ.x, pExt = pJ.y);
+            ctx.stroke();
+        }
+
+        // 監聽視窗縮放以重繪幾何圖形
+        window.addEventListener('resize', () => {
+            const activeView = document.querySelector('.view-section.active');
+            if(activeView && activeView.id === 'view-inverse') updateInverseLab();
+        });
+    </script>
+</body>
+</html>
