@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Style 數位數學教案：矩陣篇 (修正版)</title>
+    <title>Apple Style 數位數學教案：矩陣篇</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -70,8 +70,8 @@
                 <div class="apple-card p-8 cursor-pointer flex flex-col justify-between" onclick="switchView('inverse')">
                     <div>
                         <div class="text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-2">主題二</div>
-                        <h2 class="text-2xl font-bold mb-3">二階反方陣與幾何毀滅</h2>
-                        <p class="text-gray-500 text-sm leading-relaxed mb-6">直觀感受 $\det(A) = 0$ 時二維空間被「壓扁」的幾何痛點，並透過動畫掌握反方陣公式的元素互換。</p>
+                        <h2 class="text-2xl font-bold mb-3">二階反方陣與不可逆狀態</h2>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-6">直觀感受 $\det(A) = 0$ 時二維空間被「壓扁」的不可逆痛點，並透過動態矩陣表法掌握公式元素互換。</p>
                     </div>
                     <div class="text-[#0071e3] text-sm font-medium flex items-center">開始實驗 <span class="ml-1">→</span></div>
                 </div>
@@ -119,19 +119,19 @@
                         <div class="space-y-4">
                             <button class="w-full text-left p-3 rounded-xl border border-gray-200 text-sm hover:bg-gray-50 flex justify-between items-center font-medium" onclick="toggleStep('step1-ans')">
                                 <span>步驟一：求出特徵方程式 $A^2 - \text{tr}(A)A + \det(A)I_2$</span>
-                                <span id="btn-label-1" class="text-xs text-blue-500">展開解答 ↓</span>
+                                <span class="text-xs text-blue-500">展開解答 ↓</span>
                             </button>
                             <div id="step1-ans" class="hidden p-4 bg-gray-50 rounded-xl text-sm font-mono border border-gray-100"></div>
 
                             <button class="w-full text-left p-3 rounded-xl border border-gray-200 text-sm hover:bg-gray-50 flex justify-between items-center font-medium" onclick="toggleStep('step2-ans')">
                                 <span>步驟二：多項式長除法（將高次式轉為餘式）</span>
-                                <span id="btn-label-2" class="text-xs text-blue-500">展開解答 ↓</span>
+                                <span class="text-xs text-blue-500">展開解答 ↓</span>
                             </button>
                             <div id="step2-ans" class="hidden p-4 bg-gray-50 rounded-xl text-sm font-mono border border-gray-100 overflow-x-auto"></div>
 
                             <button class="w-full text-left p-3 rounded-xl border border-gray-200 text-sm hover:bg-gray-50 flex justify-between items-center font-medium" onclick="toggleStep('step3-ans')">
                                 <span>步驟三：將 $A$ 帶入餘式求出最終矩陣解答</span>
-                                <span id="btn-label-3" class="text-xs text-blue-500">展開解答 ↓</span>
+                                <span class="text-xs text-blue-500">展開解答 ↓</span>
                             </button>
                             <div id="step3-ans" class="hidden p-4 bg-gray-50 rounded-xl text-sm font-mono border border-gray-100"></div>
                         </div>
@@ -141,53 +141,64 @@
         </section>
 
         <section id="view-inverse" class="view-section w-full">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="lg:col-span-4 apple-card p-6 bg-white flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold mb-2">二階反方陣實驗室</h3>
-                        <p class="text-gray-500 text-xs mb-6">手動拖動滑桿，注意當 $\det(A) = 0$ 時幾何網格發生的災難性變化。</p>
+            
+            <div class="apple-card p-5 bg-white mb-6 text-center">
+                <div class="text-xs text-gray-400 font-semibold tracking-wider uppercase mb-1">二階反方陣標準公式</div>
+                <div id="global-inverse-formula" class="text-sm md:text-base py-1"></div>
+            </div>
 
-                        <div class="space-y-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-5 apple-card p-6 bg-white flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold mb-1">二階反方陣動態控制台</h3>
+                        <p class="text-gray-400 text-xs mb-6">拖動滑桿調整數值，觀察下方原始矩陣與右側空間幾何的聯動反饋。</p>
+
+                        <div class="space-y-4 mb-6">
                             <div>
-                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 a (左上)</span><span id="val-a" class="font-bold">1</span></div>
+                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 a (左上)</span><span id="val-a" class="font-bold text-[#0071e3]">1</span></div>
                                 <input id="slider-a" type="range" min="-4" max="4" step="1" value="1" class="w-full accent-[#0071e3]" oninput="updateInverseLab()">
                             </div>
                             <div>
-                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 b (右上)</span><span id="val-b" class="font-bold">2</span></div>
+                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 b (右上)</span><span id="val-b" class="font-bold text-[#0071e3]">2</span></div>
                                 <input id="slider-b" type="range" min="-4" max="4" step="1" value="2" class="w-full accent-[#0071e3]" oninput="updateInverseLab()">
                             </div>
                             <div>
-                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 c (左下)</span><span id="val-c" class="font-bold">2</span></div>
+                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 c (左下)</span><span id="val-c" class="font-bold text-[#0071e3]">2</span></div>
                                 <input id="slider-c" type="range" min="-4" max="4" step="1" value="2" class="w-full accent-[#0071e3]" oninput="updateInverseLab()">
                             </div>
                             <div>
-                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 d (右下)</span><span id="val-d" class="font-bold">3</span></div>
+                                <div class="flex justify-between text-xs font-mono mb-1"><span>元素 d (右下)</span><span id="val-d" class="font-bold text-[#0071e3]">3</span></div>
                                 <input id="slider-d" type="range" min="-4" max="4" step="1" value="3" class="w-full accent-[#0071e3]" oninput="updateInverseLab()">
                             </div>
                         </div>
                         
-                        <div class="mt-4 flex gap-2">
-                            <button class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-medium py-1.5 rounded-lg text-xs" onclick="setPresetInverse(1,2,2,4)">設為毀滅狀態 (det=0)</button>
-                            <button class="flex-1 bg-blue-50 hover:bg-blue-100 text-[#0071e3] font-medium py-1.5 rounded-lg text-xs" onclick="setPresetInverse(2,1,-1,2)">設為正常狀態</button>
+                        <div class="flex gap-2 mb-6">
+                            <button class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-medium py-1.5 rounded-lg text-xs transition-colors" onclick="setPresetInverse(1,2,2,4)">設為不可逆狀態 (det=0)</button>
+                            <button class="flex-1 bg-blue-50 hover:bg-blue-100 text-[#0071e3] font-medium py-1.5 rounded-lg text-xs transition-colors" onclick="setPresetInverse(2,1,-1,2)">設為正常狀態</button>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-4 mb-4">
+                            <div class="text-xs text-gray-400 font-semibold mb-2">當前設定的原始矩陣：</div>
+                            <div id="current-matrix-a-math" class="flex justify-center py-2 bg-gray-50/50 rounded-xl"></div>
                         </div>
                     </div>
 
-                    <div class="mt-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <div id="inv-det-math" class="text-sm mb-2 text-center"></div>
                         <div id="inv-status-badge" class="text-center py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-2"></div>
                         <div id="inv-formula-math" class="text-center pt-2 border-t border-gray-200/60"></div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-8 apple-card p-6 bg-white flex flex-col items-center justify-center min-h-[400px]">
+                <div class="lg:col-span-7 apple-card p-6 bg-white flex flex-col items-center justify-center min-h-[400px]">
                     <div class="w-full flex justify-between items-center mb-4">
-                        <span class="text-sm font-bold">空間線性映射視覺化（追蹤基底）</span>
+                        <span class="text-sm font-bold text-gray-700">空間幾何線性映射（追蹤單位基底）</span>
                         <div class="flex gap-4 text-xs font-semibold">
                             <span class="text-red-500">■ 變換後 i(a,c)</span>
                             <span class="text-blue-500">■ 變換後 j(b,d)</span>
                         </div>
                     </div>
-                    <div class="relative w-full max-w-md aspect-square bg-[#f5f5f7] rounded-xl overflow-hidden border border-gray-100">
+                    <div class="relative w-full max-w-sm aspect-square bg-[#f5f5f7] rounded-xl overflow-hidden border border-gray-100">
                         <canvas id="geometryCanvas" class="w-full h-full"></canvas>
                     </div>
                 </div>
@@ -213,7 +224,7 @@
             } else {
                 backBtn.classList.remove('hidden');
                 if(viewId === 'characteristic') { calculateCharacteristic(); generateQuiz1(); }
-                if(viewId === 'inverse') { updateInverseLab(); }
+                if(viewId === 'inverse') { initInversePage(); }
             }
         }
 
@@ -222,7 +233,7 @@
             el.classList.toggle('hidden');
         }
 
-        // ================== 主題一：特徵方程式動態出題核心 ==================
+        // ================== 主題一：特徵方程式動態出題 ==================
         function calculateCharacteristic() {
             const a = parseInt(document.getElementById('m1-a').value) || 0;
             const b = parseInt(document.getElementById('m1-b').value) || 0;
@@ -248,12 +259,10 @@
             );
         }
 
-        // 輔助函數：格式化多項式係數
         function fmtTerm(coef, power, isFirst = false) {
             if (coef === 0) return "";
             let sign = coef > 0 ? "+" : "-";
             if (isFirst) sign = coef > 0 ? "" : "-";
-            
             let absCoef = Math.abs(coef);
             let coefStr = absCoef === 1 && power !== 0 ? "" : absCoef;
             
@@ -267,52 +276,40 @@
             return ` ${sign} ${coefStr}${varStr}`;
         }
 
-        // 完全修復：動態隨機逆向出題引擎
         function generateQuiz1() {
-            // 隱藏所有答案面板，重置按鈕狀態
             ['step1-ans', 'step2-ans', 'step3-ans'].forEach(id => document.getElementById(id).classList.add('hidden'));
 
-            // 1. 隨機生成漂亮的整數矩陣 A (限制在小數值確保好算)
             const pool = [
-                {a:1, b:4, c:1, d:6}, // tr=7, det=2
-                {a:2, b:3, c:1, d:4}, // tr=6, det=5
-                {a:1, b:2, c:3, d:4}, // tr=5, det=-2
-                {a:3, b:1, c:4, d:2}, // tr=5, det=2
-                {a:2, b:-1, c:3, d:5} // tr=7, det=13
+                {a:1, b:4, c:1, d:6},
+                {a:2, b:3, c:1, d:4},
+                {a:1, b:2, c:3, d:4},
+                {a:3, b:1, c:4, d:2},
+                {a:2, b:-1, c:3, d:5}
             ];
             const matrix = pool[Math.floor(Math.random() * pool.length)];
             
             const tr = matrix.a + matrix.d;
             const det = (matrix.a * matrix.d) - (matrix.b * matrix.c);
 
-            // 特徵式為 x^2 - tr*x + det = 0
-            // 2. 隨機生成商式 Q(x) = x^2 + q1*x + q0
-            const q1 = Math.floor(Math.random() * 5) - 2; // -2 ~ 2
-            const q0 = Math.floor(Math.random() * 4) + 1;  // 1 ~ 4
+            const q1 = Math.floor(Math.random() * 5) - 2;
+            const q0 = Math.floor(Math.random() * 4) + 1;
+            const r1 = Math.floor(Math.random() * 6) - 3;
+            const r0 = Math.floor(Math.random() * 5) - 2;
 
-            // 3. 隨機生成一階餘式 R(x) = r1*x + r0
-            const r1 = Math.floor(Math.random() * 6) - 3; // -3 ~ 2 (非零比較有趣)
-            const r0 = Math.floor(Math.random() * 5) - 2; // -2 ~ 2
-
-            // 4. 動態乘回展開： F(x) = (x^2 - tr*x + det)(x^2 + q1*x + q0) + (r1*x + r0)
-            // 展開係數計算：
             const c4 = 1;
             const c3 = q1 - tr;
             const c2 = q0 - (tr * q1) + det;
             const c1 = (det * q1) - (tr * q0) + r1;
             const c0 = (det * q0) + r0;
 
-            // 5. 組合多項式字串
             let polyString = fmtTerm(c4, 4, true) + fmtTerm(c3, 3) + fmtTerm(c2, 2) + fmtTerm(c1, 1) + fmtTerm(c0, 0);
 
-            // 6. 渲染題目面板
             const qQuestion = document.getElementById('quiz-question-math');
             katex.render(
                 `\\text{設 } A = \\begin{bmatrix} ${matrix.a} & ${matrix.b} \\\\ ${matrix.c} & ${matrix.d} \\end{bmatrix}，\\text{試求多項式 } ${polyString} = \\text{？}`, 
                 qQuestion
             );
 
-            // 7. 渲染步驟一答案
             const s1Sign = tr >= 0 ? '-' : '+';
             const s2Sign = det >= 0 ? '+' : '-';
             katex.render(
@@ -321,7 +318,6 @@
                 document.getElementById('step1-ans')
             );
 
-            // 8. 渲染步驟二答案 (長除法除式)
             let qStr = fmtTerm(1, 2, true) + fmtTerm(q1, 1) + fmtTerm(q0, 0);
             let rStr = fmtTerm(r1, 1, true) + fmtTerm(r0, 0);
             
@@ -334,7 +330,6 @@
             `;
             renderMathInElement(document.getElementById('step2-ans'));
 
-            // 9. 渲染步驟三答案 (最終運算結果)
             const ansA = r1 * matrix.a + r0;
             const ansB = r1 * matrix.b;
             const ansC = r1 * matrix.c;
@@ -348,7 +343,16 @@
             renderMathInElement(document.getElementById('step3-ans'));
         }
 
-        // ================== 主題二：二階反方陣邏輯 ==================
+        // ================== 主題二：二階反方陣與不可逆狀態 ==================
+        function initInversePage() {
+            // 置頂靜態公式渲染
+            katex.render(
+                `\\text{若 } A = \\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix} \\text{ 且 } \\det(A) = ad - bc \\neq 0 \\text{，則其反方陣 } A^{-1} = \\frac{1}{ad-bc} \\begin{bmatrix} d & -b \\\\ -c & a \\end{bmatrix}`, 
+                document.getElementById('global-inverse-formula')
+            );
+            updateInverseLab();
+        }
+
         function setPresetInverse(a,b,c,d) {
             document.getElementById('slider-a').value = a;
             document.getElementById('slider-b').value = b;
@@ -368,20 +372,28 @@
             document.getElementById('val-c').innerText = c;
             document.getElementById('val-d').innerText = d;
 
+            // 1. 動態渲染學生當前創造的原始矩陣 A 表法
+            katex.render(
+                `A = \\begin{bmatrix} ${a} & ${b} \\\\ ${c} & ${d} \\end{bmatrix}`, 
+                document.getElementById('current-matrix-a-math')
+            );
+
             const det = (a * d) - (b * c);
             
+            // 2. 渲染行列式計算
             katex.render(`\\det(A) = (${a})(${d}) - (${b})(${c}) = ${det}`, document.getElementById('inv-det-math'));
 
             const badge = document.getElementById('inv-status-badge');
             const formulaDiv = document.getElementById('inv-formula-math');
 
+            // 3. 根據 det(A) 狀態切換台灣教材標準用詞「不可逆狀態」
             if (det === 0) {
                 badge.className = "text-center py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-2 bg-red-100 text-red-700";
-                badge.innerText = "不可逆 (反方陣不存在)";
-                katex.render(`A^{-1} \\text{ 不存在 (空間已降維壓扁)}`, formulaDiv);
+                badge.innerText = "不可逆狀態 (反方陣不存在)";
+                katex.render(`\\because \\det(A) = 0 \\quad \\therefore A \\text{ 為不可逆方陣，其反方陣不存在}`, formulaDiv);
             } else {
                 badge.className = "text-center py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-2 bg-green-100 text-green-700";
-                badge.innerText = "可逆 (反方陣存在)";
+                badge.innerText = "可逆狀態 (反方陣存在)";
                 katex.render(`A^{-1} = \\frac{1}{${det}}\\begin{bmatrix} ${d} & ${-b} \\\\ ${-c} & ${a} \\end{bmatrix}`, formulaDiv);
             }
 
@@ -435,7 +447,7 @@
             ctx.moveTo(p0.x, p0.y);
             ctx.lineTo(pI.x, pI.y);
             ctx.lineTo(pIJ.x, pIJ.y);
-            ctx.lineTo(pJ.x, pZ = pJ.y);
+            ctx.lineTo(pJ.x, pJ.y);
             ctx.closePath();
             ctx.fill();
 
