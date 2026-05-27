@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Style 數位數學教案矩陣篇</title>
+    <title>Apple Style 數位數學教案：矩陣篇8</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -58,7 +58,7 @@
                 <p class="text-gray-500 text-lg">透過動態視覺與即時反饋，解構抽象的線性代數。</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                 <div class="apple-card p-6 cursor-pointer flex flex-col justify-between" onclick="switchView('characteristic')">
                     <div>
                         <div class="text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-2">主題一</div>
@@ -82,6 +82,14 @@
                         <p class="text-gray-500 text-xs leading-relaxed mb-6">專攻交換律失靈、消去律陷阱與零因子等高中大考核心盲點。內建計時器與隨機 5 題除雷機制。</p>
                     </div>
                     <div class="text-[#0071e3] text-xs font-medium flex items-center">開始挑戰 <span class="ml-1">→</span></div>
+                </div>
+                <div class="apple-card p-6 cursor-pointer flex flex-col justify-between" onclick="switchView('linear-systems')">
+                    <div>
+                        <div class="text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-2">主題四</div>
+                        <h2 class="text-xl font-bold mb-3">反方陣與二元一次方程組</h2>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-6">探究矩陣方程 $AX=B$ 的左乘移項法則，結合 2D 幾何線條動態演示「恰有一解、無解、無限多解」之克拉瑪幾何型態。</p>
+                    </div>
+                    <div class="text-[#0071e3] text-xs font-medium flex items-center">開始實驗 <span class="ml-1">→</span></div>
                 </div>
             </div>
         </section>
@@ -209,13 +217,92 @@
                 </button>
             </div>
 
-            <div id="quiz-questions-container" class="space-y-6 mb-8">
-                </div>
+            <div id="quiz-questions-container" class="space-y-6 mb-8"></div>
 
             <div class="text-center">
                 <button id="submit-quiz-btn" class="apple-btn px-8 py-3 rounded-2xl text-sm font-semibold tracking-wide shadow-md" onclick="evaluateQuizAnswers()">
                     提交答案並核對
                 </button>
+            </div>
+        </section>
+
+        <section id="view-linear-systems" class="view-section w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    <div class="apple-card p-6 bg-white">
+                        <h3 class="text-lg font-bold mb-1">1. 線性方程組控制台</h3>
+                        <p class="text-xs text-gray-400 mb-6">動態微調聯立直線的係數，即時剖析解的分類型態。</p>
+                        
+                        <div class="bg-gray-50/50 border border-gray-100 p-3 rounded-xl mb-6 flex justify-center items-center">
+                            <div id="ls-equation-preview" class="text-sm font-medium"></div>
+                        </div>
+
+                        <div class="space-y-4 mb-6">
+                            <div class="p-3 bg-red-50/30 rounded-xl border border-red-100/20">
+                                <span class="text-xs font-bold text-red-600 block mb-2">直線 L₁ 參數</span>
+                                <div class="grid grid-cols-3 gap-2 text-[10px] font-mono">
+                                    <div>a₁: <span id="val-a1" class="font-bold">2</span><input id="slider-a1" type="range" min="-4" max="4" value="2" class="w-full accent-red-500" oninput="updateLinearSystems()"></div>
+                                    <div>b₁: <span id="val-b1" class="font-bold">1</span><input id="slider-b1" type="range" min="-4" max="4" value="1" class="w-full accent-red-500" oninput="updateLinearSystems()"></div>
+                                    <div>c₁: <span id="val-c1" class="font-bold">2</span><input id="slider-c1" type="range" min="-6" max="6" value="2" class="w-full accent-red-500" oninput="updateLinearSystems()"></div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-blue-50/30 rounded-xl border border-blue-100/20">
+                                <span class="text-xs font-bold text-blue-600 block mb-2">直線 L₂ 參數</span>
+                                <div class="grid grid-cols-3 gap-2 text-[10px] font-mono">
+                                    <div>a₂: <span id="val-a2" class="font-bold">1</span><input id="slider-a2" type="range" min="-4" max="4" value="1" class="w-full accent-blue-500" oninput="updateLinearSystems()"></div>
+                                    <div>b₂: <span id="val-b2" class="font-bold">-1</span><input id="slider-b2" type="range" min="-4" max="4" value="-1" class="w-full accent-blue-500" oninput="updateLinearSystems()"></div>
+                                    <div>c₂: <span id="val-c2" class="font-bold">1</span><input id="slider-c2" type="range" min="-6" max="6" value="1" class="w-full accent-blue-500" oninput="updateLinearSystems()"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5 text-[10px] font-medium mb-4">
+                            <button class="bg-gray-100 hover:bg-gray-200 py-2 rounded-lg text-center" onclick="setPresetLS(2,1,2,1,-1,1)">恰有一解</button>
+                            <button class="bg-gray-100 hover:bg-gray-200 py-2 rounded-lg text-center text-red-600 font-bold" onclick="setPresetLS(1,2,2,2,4,2)">無解狀態</button>
+                            <button class="bg-gray-100 hover:bg-gray-200 py-2 rounded-lg text-center text-green-600 font-bold" onclick="setPresetLS(1,2,2,2,4,4)">無限多解</button>
+                        </div>
+                    </div>
+
+                    <div class="apple-card p-5 bg-white flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs text-gray-400 font-semibold mb-2">矩陣行列式分析：</div>
+                            <div id="ls-det-math" class="text-center py-2 bg-gray-50 rounded-xl font-mono text-xs mb-3"></div>
+                            <div id="ls-status-badge" class="text-center py-2 rounded-xl text-xs font-bold tracking-wider mb-4"></div>
+                        </div>
+                        <div id="ls-solution-math" class="p-3 bg-blue-50/40 border border-blue-100/30 rounded-xl text-xs leading-relaxed text-gray-600"></div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 flex flex-col gap-6">
+                    <div class="apple-card p-4 bg-white flex flex-col items-center">
+                        <div class="w-full flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-gray-700">二元一次方程組幾何型態 (2D 坐標系)</span>
+                            <div class="flex gap-3 text-[10px] font-bold">
+                                <span class="text-red-500">■ 直線 L₁</span>
+                                <span class="text-blue-500">■ 直線 L₂</span>
+                            </div>
+                        </div>
+                        <div class="relative w-full max-w-md aspect-square bg-[#f5f5f7] rounded-xl overflow-hidden border border-gray-100">
+                            <canvas id="lsGeometryCanvas" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="apple-card p-6 bg-white">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-base font-bold">2. 大考「移項與左乘」專項除雷挑戰</h3>
+                            <button class="text-[#0071e3] text-xs font-semibold hover:underline" onclick="loadLSQuiz()">抽一題演練</button>
+                        </div>
+                        <div class="p-4 bg-blue-50/30 rounded-xl border border-blue-100/20 mb-4">
+                            <div id="lsq-question" class="text-sm font-medium tracking-wide"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4" id="lsq-options-box">
+                            </div>
+                        <div id="lsq-expl-box" class="hidden p-4 bg-gray-50 rounded-xl text-xs leading-relaxed border border-gray-100">
+                            <span id="lsq-status" class="font-bold block mb-1"></span>
+                            <div id="lsq-expl-text"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -231,79 +318,42 @@
         let activeQuizSet = [];
         let quizSubmitted = false;
 
-        const QUESTION_BANK = [
+        // 主題四專用變數
+        let currentLSQuiz = null;
+        const LS_QUIZ_BANK = [
             {
-                id: 1,
-                title: "設 $A, B$ 為同階方陣，則 $(A+B)^2 = A^2 + 2AB + B^2$ 恆成立。",
-                ans: "X",
-                expl: "$\\because (A+B)^2 = (A+B)(A+B) = A^2 + AB + BA + B^2$。由於矩陣乘法一般不滿足交換律（即 $AB \\neq BA$），故 $AB + BA$ 無法合併為 $2AB$。只有當 $A, B$ 可交換時才成立。"
+                q: "設 $A, B, X$ 皆為二階可逆方陣，若滿足矩陣方程式 $AX = B$，則 $X$ 應如何表示？",
+                options: [
+                    { t: "$X = B A^{-1}$", c: false },
+                    { t: "$X = A^{-1} B$", c: true }
+                ],
+                expl: "因為矩陣乘法**不具備交換律**！在方程式 $AX = B$ 中，矩陣 $A$ 位在 $X$ 的**左側**。為了消去 $A$，我們必須在等號兩邊同時**「左乘」** $A^{-1}$：<br>$$A^{-1}(AX) = A^{-1}B \\implies I_2X = A^{-1}B \\implies X = A^{-1}B$$<br>如果寫成 $BA^{-1}$ 則是右乘，順序顛倒在大考中是常見的致命錯誤。"
             },
             {
-                id: 2,
-                title: "設 $A, B$ 為同階方陣，則 $(A+B)(A-B) = A^2 - B^2$ 恆成立。",
-                ans: "X",
-                expl: "展開算式為 $(A+B)(A-B) = A^2 - AB + BA - B^2$。因為矩陣乘法不具交換律，$-AB + BA$ 通常無法相消歸零，故本式未必成立。"
+                q: "大考經典多選題：設 $A, B, C, X$ 皆為二階方陣，其中 $A, B$ 為可逆方陣。若滿足夾心算式 $AXB = C$，則未知矩陣 $X = $？",
+                options: [
+                    { t: "$X = A^{-1} C B^{-1}$", c: true },
+                    { t: "$X = A^{-1} B^{-1} C$", c: false }
+                ],
+                expl: "這是精彩的「前後夾擊」題。要解出包在中央的 $X$，需要分步剝離：<br>1. 先消除左邊的 $A$：在兩側同時**左乘** $A^{-1}$，得到 $XB = A^{-1}C$。<br>2. 再消除右邊的 $B$：在兩側同時**右乘** $B^{-1}$，得到 $X = A^{-1}CB^{-1}$。<br>由於非交換律，反方陣的位置絕對不可任意挪動或調換順序！"
             },
             {
-                id: 3,
-                title: "設 $A, B$ 為同階方陣，則 $(AB)^2 = A^2B^2$ 恆成立。",
-                ans: "X",
-                expl: "$\\because (AB)^2 = (AB)(AB) = ABAB$。而 $A^2B^2 = AABB$。除非 $BA = AB$（可交換），否則 $ABAB$ 絕不等於 $AABB$。"
-            },
-            {
-                id: 4,
-                title: "設 $A, B, C$ 為同階方陣且 $A \\neq O$（零矩陣）。若 $AB = AC$，則 $B = C$ 恆成立。",
-                ans: "X",
-                expl: "矩陣不具備一般消去律。由 $AB = AC$ 可得 $A(B-C) = O$，當 $A$ 為不可逆矩陣時，即使 $A \\neq O$，仍可找到非零矩陣使乘積為零（存在零因子），故 $B-C$ 未必為 $O$，即 $B=C$ 未必成立。"
-            },
-            {
-                id: 5,
-                title: "設 $A, B, C$ 為二階方陣。若 $\\det(A) \\neq 0$ 且 $AB = AC$，則 $B = C$ 恆成立。",
-                ans: "O",
-                expl: "$\\because \\det(A) \\neq 0$，代表 $A$ 的反方陣 $A^{-1}$ 存在。我們可以在等式 $AB = AC$ 的左側同時乘上 $A^{-1}$，得到 $A^{-1}AB = A^{-1}AC \\implies I_2B = I_2C \\implies B = C$。此時消去律成立。"
-            },
-            {
-                id: 6,
-                title: "設 $A, B$ 為二階方陣。若 $AB = O$，則 $A = O$ 或 $B = O$。",
-                ans: "X",
-                expl: "矩陣世界中存在「零因子」。兩個非零矩陣相乘仍可能得到零矩陣。<br>反例：設 $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 0 \\end{bmatrix} \\neq O$，$B = \\begin{bmatrix} 0 & 0 \\\\ 1 & 0 \\end{bmatrix} \\neq O$，但 $AB = \\begin{bmatrix} 0 & 0 \\\\ 0 & 0 \\end{bmatrix} = O$。"
-            },
-            {
-                id: 7,
-                title: "設 $A$ 為二階方陣。若 $A^2 = O$，則 $A = O$ 恆成立。",
-                ans: "X",
-                expl: "這稱為「冪零矩陣」。一個矩陣自己平方為零，不代表它本身是零矩陣。<br>反例：設 $A = \\begin{bmatrix} 0 & 1 \\\\ 0 & 0 \\end{bmatrix} \\neq O$，但 $A^2 = \\begin{bmatrix} 0 & 1 \\\\ 0 & 0 \\end{bmatrix}\\begin{bmatrix} 0 & 1 \\\\ 0 & 0 \\end{bmatrix} = \\begin{bmatrix} 0 & 0 \\\\ 0 & 0 \\end{bmatrix} = O$。"
-            },
-            {
-                id: 8,
-                title: "設 $A$ 為二階方陣。若 $A^2 = I_2$，則 $A = I_2$ 或 $A = -I_2$。",
-                ans: "X",
-                expl: "實數中 $x^2 = 1 \\implies x = \\pm 1$，但在矩陣世界中，單位矩陣的「平方根」有無窮多個。<br>反例：設 $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & -1 \\end{bmatrix}$，顯然 $A \\neq \\pm I_2$，但 $A^2 = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} = I_2$。"
-            },
-            {
-                id: 9,
-                title: "設 $A$ 為二階方陣，$I_2$ 為二階單位矩陣，則 $AI_2 = I_2A$ 恆成立。",
-                ans: "O",
-                expl: "單位矩陣 $I$ 在矩陣乘法中的角色相當於實數中的 1。任何方陣與同階單位矩陣相乘皆滿足交換律，且結果保持不變，即 $AI = IA = A$。"
-            },
-            {
-                id: 10,
-                title: "若 $A, B$ 皆為二階「對角矩陣」（即主對角線以外的元素皆為 0），則 $AB = BA$ 恆成立。",
-                ans: "O",
-                expl: "設 $A = \\begin{bmatrix} x_1 & 0 \\\\ 0 & y_1 \\end{bmatrix}$，$B = \\begin{bmatrix} x_2 & 0 \\\\ 0 & y_2 \\end{bmatrix}$。則 $AB = \\begin{bmatrix} x_1x_2 & 0 \\\\ 0 & y_1y_2 \\end{bmatrix}$，而 $BA = \\begin{bmatrix} x_2x_1 & 0 \\\\ 0 & y_2y_1 \\end{bmatrix}$。因為實數乘法具交換律，所以兩個對角矩陣相乘恆滿足交換律。"
-            },
-            {
-                id: 11,
-                title: "設 $A, B, P$ 為同階方陣，其中 $P$ 為可逆矩陣。若 $B = P^{-1}AP$，則 $AB = BA$ 恆成立。",
-                ans: "X",
-                expl: "$B = P^{-1}AP$ 代表兩矩陣具備相似結構。此時若想計算 $AB$，展開為 $A(P^{-1}AP)$；而 $BA$ 展開為 $(P^{-1}AP)A$。因為矩陣不具交換律，我們無法隨意將 $A$ 挪移穿過 $P$ 或 $P^{-1}$，故通常 $AB \\neq BA$。"
-            },
-            {
-                id: 12,
-                title: "設矩陣 $A$ 的型階為 $2 \\times 3$，矩陣 $B$ 的型階為 $3 \\times 2$，則 $AB$ 與 $BA$ 皆可運算且型階相同。",
-                ans: "X",
-                expl: "$A_{2 \\times 3} \\cdot B_{3 \\times 2}$ 的乘積 $AB$ 型階為 $2 \\times 2$；而 $B_{3 \\times 2} \\cdot A_{2 \\times 3}$ 的乘積 $BA$ 型階為 $3 \\times 3$。產出的方陣階數完全不同，自然不可能相等。"
+                q: "設 $A, X$ 為二階方陣，且 $\\det(A) = 0$。若滿足矩陣方程 $AX = \\begin{bmatrix} 0 & 0 \\\\ 0 & 0 \\end{bmatrix}$，則 $X$ 必然是零矩陣嗎？",
+                options: [
+                    { t: "是的，根據消去律 $X$ 必為零矩陣", c: false },
+                    { t: "不是，當 $A$ 不可逆時可能存在非零矩陣解", c: true }
+                ],
+                expl: "當 $\\det(A) = 0$ 時，代表 $A$ 的**反方陣不存在**，消去律失效。在矩陣代數中存在「零因子」，兩個非零矩陣相乘依然有可能得到零矩陣。因此 $X$ 不一定為零矩陣。"
             }
+        ];
+
+        const QUESTION_BANK = [
+            { id: 1, title: "設 $A, B$ 為同階方陣，則 $(A+B)^2 = A^2 + 2AB + B^2$ 恆成立。", ans: "X", expl: "$\\because (A+B)^2 = (A+B)(A+B) = A^2 + AB + BA + B^2$。由於矩陣乘法一般不滿足交換律（即 $AB \\neq BA$），故 $AB + BA$ 無法合併為 $2AB$。只有當 $A, B$ 可交換時才成立。" },
+            { id: 2, title: "設 $A, B$ 為同階方陣，則 $(A+B)(A-B) = A^2 - B^2$ 恆成立。", ans: "X", expl: "展開算式為 $(A+B)(A-B) = A^2 - AB + BA - B^2$。因為矩陣乘法不具交換律，$-AB + BA$ 通常無法相消歸零，故本式未必成立。" },
+            { id: 3, title: "設 $A, B$ 為同階方陣，則 $(AB)^2 = A^2B^2$ 恆成立。", ans: "X", expl: "$\\because (AB)^2 = (AB)(AB) = ABAB$。而 $A^2B^2 = AABB$。除非 $BA = AB$（可交換），否則 $ABAB$ 絕不等於 $AABB$。" },
+            { id: 4, title: "設 $A, B, C$ 為同階方陣且 $A \\neq O$（零矩陣）。若 $AB = AC$，則 $B = C$ 恆成立。", ans: "X", expl: "矩陣不具備一般消去律。由 $AB = AC$ 可得 $A(B-C) = O$，當 $A$ 為不可逆陣時，即使 $A \\neq O$，仍可找到非零矩陣使乘積為零（存在零因子），故 $B-C$ 未必為 $O$，即 $B=C$ 未必成立。" },
+            { id: 5, title: "設 $A, B, C$ 為二階方陣。若 $\\det(A) \\neq 0$ 且 $AB = AC$，則 $B = C$ 恆成立。", ans: "O", expl: "$\\because \\det(A) \\neq 0$，代表 $A$ 的反方陣 $A^{-1}$ 存在。我們可以在等式 $AB = AC$ 的左側同時乘上 $A^{-1}$，得到 $A^{-1}AB = A^{-1}AC \\implies I_2B = I_2C \\implies B = C$。此時消去律成立。" },
+            { id: 6, title: "設 $A, B$ 為二階方陣。若 $AB = O$，則 $A = O$ 或 $B = O$。", ans: "X", expl: "矩陣世界中存在「零因子」。兩個非零矩陣相乘仍可能得到零矩陣。<br>反例：設 $A = \\begin{bmatrix} 1 & 0 \\\\ 0 & 0 \\end{bmatrix} \\neq O$，$B = \\begin{bmatrix} 0 & 0 \\\\ 1 & 0 \\end{bmatrix} \\neq O$，但 $AB = \\begin{bmatrix} 0 & 0 \\\\ 0 & 0 \\end{bmatrix} = O$。" }
         ];
 
         function switchView(viewId) {
@@ -319,6 +369,7 @@
                 if(viewId === 'characteristic') { calculateCharacteristic(); generateQuiz1(); }
                 if(viewId === 'inverse') { initInversePage(); }
                 if(viewId === 'quiz') { startNewQuizChallenge(); }
+                if(viewId === 'linear-systems') { initLinearSystemsPage(); }
             }
         }
 
@@ -326,28 +377,24 @@
             document.getElementById(id).classList.toggle('hidden');
         }
 
-        // ================== 主題三：完美修復的中文/LaTeX混合渲染引擎 ==================
+        // ================== 主題三：是非題挑戰區 ==================
         function startNewQuizChallenge() {
-            quizSeconds = 0;
-            quizSubmitted = false;
+            quizSeconds = 0; quizSubmitted = false;
             document.getElementById('quiz-timer').innerText = "00:00";
             document.getElementById('submit-quiz-btn').disabled = false;
             document.getElementById('submit-quiz-btn').className = "apple-btn px-8 py-3 rounded-2xl text-sm font-semibold tracking-wide shadow-md";
 
             const shuffled = [...QUESTION_BANK].sort(() => 0.5 - Math.random());
             activeQuizSet = shuffled.slice(0, 5);
-
-            const container = document.getElementById('quiz-questions-container');
-            container.innerHTML = "";
+            const container = document.getElementById('quiz-questions-container'); container.innerHTML = "";
 
             activeQuizSet.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = "apple-card p-6 bg-white flex flex-col justify-between";
-                card.id = `quiz-card-${index}`;
+                card.className = "apple-card p-6 bg-white flex flex-col justify-between"; card.id = `quiz-card-${index}`;
                 card.innerHTML = `
                     <div class="mb-4">
                         <div class="text-xs font-semibold text-gray-400 mb-1">第 ${index + 1} 題</div>
-                        <div class="text-base text-gray-800 font-medium tracking-wide leading-relaxed" id="q-text-${index}">${item.title}</div>
+                        <div class="text-base text-gray-800 font-medium tracking-wide" id="q-text-${index}">${item.title}</div>
                     </div>
                     <div class="flex gap-4 items-center">
                         <button id="btn-${index}-O" class="flex-1 py-2 rounded-xl border border-gray-200 text-sm font-bold transition-all hover:bg-gray-50" onclick="selectUserAns(${index}, 'O')">O (正確)</button>
@@ -358,18 +405,11 @@
                         <div id="expl-math-${index}"></div>
                     </div>
                 `;
-                container.appendChild(card);
-                item.userSelected = null;
+                container.appendChild(card); item.userSelected = null;
             });
 
-            // 【核心優化】：整顆網格容器塞完後，直接呼叫 Auto-render 擴充套件，完美消滅 $ 與 \neq 符號
             if (window.renderMathInElement) {
-                renderMathInElement(container, {
-                    delimiters: [
-                        {left: "$$", right: "$$", display: true},
-                        {left: "$", right: "$", display: false}
-                    ]
-                });
+                renderMathInElement(container, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
             }
 
             clearInterval(timerInterval);
@@ -384,9 +424,7 @@
         function selectUserAns(qIndex, choice) {
             if (quizSubmitted) return;
             activeQuizSet[qIndex].userSelected = choice;
-            const btnO = document.getElementById(`btn-${qIndex}-O`);
-            const btnX = document.getElementById(`btn-${qIndex}-X`);
-
+            const btnO = document.getElementById(`btn-${qIndex}-O`); const btnX = document.getElementById(`btn-${qIndex}-X`);
             if (choice === 'O') {
                 btnO.className = "flex-1 py-2 rounded-xl text-sm font-bold bg-[#0071e3] text-white transition-all";
                 btnX.className = "flex-1 py-2 rounded-xl border border-gray-200 text-sm font-bold text-gray-400 transition-all";
@@ -398,13 +436,9 @@
 
         function evaluateQuizAnswers() {
             const unans = activeQuizSet.some(q => q.userSelected === null);
-            if(unans) {
-                alert("同學，還有題目還沒作答唷！請全部填完再點擊提交。");
-                return;
-            }
+            if(unans) { alert("同學，還有題目還沒作答唷！請全部填完再點擊提交。"); return; }
 
-            clearInterval(timerInterval);
-            quizSubmitted = true;
+            clearInterval(timerInterval); quizSubmitted = true;
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').className = "bg-gray-200 text-gray-400 px-8 py-3 rounded-2xl text-sm font-semibold tracking-wide cursor-not-allowed";
 
@@ -415,42 +449,27 @@
                 const mathDiv = document.getElementById(`expl-math-${index}`);
 
                 explBox.classList.remove('hidden');
-
                 if (item.userSelected === item.ans) {
                     card.style.border = "1px solid rgba(34, 197, 94, 0.4)";
-                    statusSpan.className = "text-green-600 font-bold block mb-1 text-sm";
-                    statusSpan.innerText = "餅乾給妳！答對了 🎉";
+                    statusSpan.className = "text-green-600 font-bold block mb-1 text-sm"; statusSpan.innerText = "餅乾給妳！答對了 🎉";
                 } else {
                     card.style.border = "1px solid rgba(239, 68, 68, 0.4)";
-                    statusSpan.className = "text-red-600 font-bold block mb-1 text-sm";
-                    statusSpan.innerText = `踩到雷區！正確答案為【 ${item.ans} 】`;
+                    statusSpan.className = "text-red-600 font-bold block mb-1 text-sm"; statusSpan.innerText = `踩到雷區！正確答案為【 ${item.ans} 】`;
                 }
-
                 mathDiv.innerHTML = item.expl;
-                if(window.renderMathInElement) {
-                    renderMathInElement(mathDiv, {
-                        delimiters: [
-                            {left: "$$", right: "$$", display: true},
-                            {left: "$", right: "$", display: false}
-                        ]
-                    });
-                }
+                if(window.renderMathInElement) { renderMathInElement(mathDiv, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] }); }
             });
         }
 
-        // ================== 主題一：特徵方程式動態出題 ==================
+        // ================== 主題一：特徵方程式 ==================
         function calculateCharacteristic() {
-            const a = parseInt(document.getElementById('m1-a').value) || 0;
-            const b = parseInt(document.getElementById('m1-b').value) || 0;
-            const c = parseInt(document.getElementById('m1-c').value) || 0;
-            const d = parseInt(document.getElementById('m1-d').value) || 0;
+            const a = parseInt(document.getElementById('m1-a').value) || 0; const b = parseInt(document.getElementById('m1-b').value) || 0;
+            const c = parseInt(document.getElementById('m1-c').value) || 0; const d = parseInt(document.getElementById('m1-d').value) || 0;
             const tr = a + d; const det = (a * d) - (b * c);
-            const infoDiv = document.getElementById('math-trace-det');
-            katex.render(`\\text{tr}(A) = ${a}+${d} = ${tr}\\\\ \\det(A) = (${a})(${d}) - (${b})(${c}) = ${det}`, infoDiv);
-            const eqDiv = document.getElementById('math-equation');
+            katex.render(`\\text{tr}(A) = ${a}+${d} = ${tr}\\\\ \\det(A) = (${a})(${d}) - (${b})(${c}) = ${det}`, document.getElementById('math-trace-det'));
             const sign1 = tr >= 0 ? '-' : '+'; const absTr = Math.abs(tr);
             const sign2 = det >= 0 ? '+' : '-'; const absDet = Math.abs(det);
-            katex.render(`A^2 ${tr === 0 ? '' : sign1 + ' ' + (absTr === 1 ? '' : absTr) + 'A'} ${det === 0 ? '' : sign2 + ' ' + absDet + 'I_2'} = O`, eqDiv, { displayMode: true });
+            katex.render(`A^2 ${tr === 0 ? '' : sign1 + ' ' + (absTr === 1 ? '' : absTr) + 'A'} ${det === 0 ? '' : sign2 + ' ' + absDet + 'I_2'} = O`, document.getElementById('math-equation'), { displayMode: true });
         }
         function fmtTerm(coef, power, isFirst = false) {
             if (coef === 0) return "";
@@ -462,7 +481,7 @@
         }
         function generateQuiz1() {
             ['step1-ans', 'step2-ans', 'step3-ans'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            const pool = [{a:1, b:4, c:1, d:6},{a:2, b:3, c:1, d:4},{a:1, b:2, c:3, d:4}];
+            const pool = [{a:1, b:4, c:1, d:6},{a:2, b:3, c:1, d:4}];
             const matrix = pool[Math.floor(Math.random() * pool.length)];
             const tr = matrix.a + matrix.d; const det = (matrix.a * matrix.d) - (matrix.b * matrix.c);
             const q1 = Math.floor(Math.random() * 3) - 1; const q0 = Math.floor(Math.random() * 3) + 1;
@@ -497,10 +516,10 @@
             katex.render(`\\det(A) = (${a})(${d}) - (${b})(${c}) = ${det}`, document.getElementById('inv-det-math'));
             const badge = document.getElementById('inv-status-badge'); const formulaDiv = document.getElementById('inv-formula-math');
             if (det === 0) {
-                badge.className = "text-center py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-2 bg-red-100 text-red-700"; badge.innerText = "不可逆狀態 (反方陣不存在)";
+                badge.className = "text-center py-1 rounded-lg text-xs font-bold bg-red-100 text-red-700"; badge.innerText = "不可逆狀態 (反方陣不存在)";
                 katex.render(`\\because \\det(A) = 0 \\quad \\therefore A \\text{ 為不可逆方陣，其反方陣不存在}`, formulaDiv);
             } else {
-                badge.className = "text-center py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-2 bg-green-100 text-green-700"; badge.innerText = "可逆狀態 (反方陣存在)";
+                badge.className = "text-center py-1 rounded-lg text-xs font-bold bg-green-100 text-green-700"; badge.innerText = "可逆狀態 (反方陣存在)";
                 katex.render(`A^{-1} = \\frac{1}{${det}}\\begin{bmatrix} ${d} & ${-b} \\\\ ${-c} & ${a} \\end{bmatrix}`, formulaDiv);
             }
             drawGeometry(a, b, c, d);
@@ -518,7 +537,128 @@
             ctx.fillStyle = (a*d-b*c === 0) ? 'rgba(239, 68, 68, 0.2)' : 'rgba(0, 113, 227, 0.1)';
             ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pI.x, pI.y); ctx.lineTo(pIJ.x, pIJ.y); ctx.lineTo(pJ.x, pJ.y); ctx.closePath(); ctx.fill();
             ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pI.x, pI.y); ctx.stroke();
-            ctx.strokeStyle = '#0071e3'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pJ.x, pJ.y); ctx.stroke();
+            ctx.strokeStyle = '#0071e3'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pJ.x, pJ.y); stroke();
+        }
+
+        // ================== 主題四：反方陣與線性方程組 ==================
+        function initLinearSystemsPage() {
+            updateLinearSystems();
+            loadLSQuiz();
+        }
+        function setPresetLS(a1,b1,c1,a2,b2,c2) {
+            document.getElementById('slider-a1').value = a1; document.getElementById('slider-b1').value = b1; document.getElementById('slider-c1').value = c1;
+            document.getElementById('slider-a2').value = a2; document.getElementById('slider-b2').value = b2; document.getElementById('slider-c2').value = c2;
+            updateLinearSystems();
+        }
+        function updateLinearSystems() {
+            const a1 = parseInt(document.getElementById('slider-a1').value); const b1 = parseInt(document.getElementById('slider-b1').value); const c1 = parseInt(document.getElementById('slider-c1').value);
+            const a2 = parseInt(document.getElementById('slider-a2').value); const b2 = parseInt(document.getElementById('slider-b2').value); const c2 = parseInt(document.getElementById('slider-c2').value);
+
+            document.getElementById('val-a1').innerText = a1; document.getElementById('val-b1').innerText = b1; document.getElementById('val-c1').innerText = c1;
+            document.getElementById('val-a2').innerText = a2; document.getElementById('val-b2').innerText = b2; document.getElementById('val-c2').innerText = c2;
+
+            // 方程組 LaTeX 渲染
+            const fmtSign = (val) => val >= 0 ? `+${val}` : `${val}`;
+            katex.render(`\\begin{cases} ${a1}x ${b1>=0?'+':''}${b1}y = ${c1} \\\\ ${a2}x ${b2>=0?'+':''}${b2}y = ${c2} \\end{cases} \\iff \\begin{bmatrix} ${a1} & ${b1} \\\\ ${a2} & ${b2} \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} ${c1} \\\\ ${c2} \\end{bmatrix}`, document.getElementById('ls-equation-preview'));
+
+            const det = a1 * b2 - b1 * a2;
+            katex.render(`\\det(A) = (${a1})(${b2}) - (${b1})(${a2}) = ${det}`, document.getElementById('ls-det-math'));
+
+            const badge = document.getElementById('ls-status-badge');
+            const solutionDiv = document.getElementById('ls-solution-math');
+
+            if (det !== 0) {
+                badge.className = "text-center py-2 rounded-xl text-xs font-bold bg-green-100 text-green-700";
+                badge.innerText = "恰有一解 (反方陣存在)";
+                
+                // 計算精確點
+                const x = ((c1 * b2) - (b1 * c2)) / det; const y = ((a1 * c2) - (c1 * a2)) / det;
+                katex.render(`\\text{反方陣存在：}\\\\ \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\frac{1}{${det}} \\begin{bmatrix} ${b2} & ${-b1} \\\\ ${-a2} & ${a1} \\end{bmatrix} \\begin{bmatrix} ${c1} \\\\ ${c2} \\end{bmatrix} = \\begin{bmatrix} ${x.toFixed(2)} \\\\ ${y.toFixed(2)} \\end{bmatrix}\\\\ \\text{兩直線完美交於一點 } (${x.toFixed(1)}, ${y.toFixed(1)})。`, solutionDiv);
+            } else {
+                // 檢查是否平行或重合
+                // 台灣高中標準：常數項比例
+                const isDependent = (a1*c2 === c1*a2) && (b1*c2 === c1*b2);
+                if (isDependent) {
+                    badge.className = "text-center py-2 rounded-xl text-xs font-bold bg-blue-100 text-blue-700";
+                    badge.innerText = "無限多解 (兩線重合)";
+                    katex.render(`\\text{此時 } \\det(A) = 0 \\text{ 且常數項比例完全相符。}\\\\ \\text{幾何上兩條直線完全「重合」，}\\\\ \\text{代表代數方程組有無限多解。}`, solutionDiv);
+                } else {
+                    badge.className = "text-center py-2 rounded-xl text-xs font-bold bg-red-100 text-red-700";
+                    badge.innerText = "無解狀態 (兩線平行)";
+                    katex.render(`\\text{此時 } \\det(A) = 0 \\text{ 但常數項比例不符！}\\\\ \\text{幾何上兩條直線互為「平行線」，}\\\\ \\text{代表空間中毫無交點，方程組無解。}`, solutionDiv);
+                }
+            }
+
+            drawLSGeometry(a1, b1, c1, a2, b2, c2);
+        }
+
+        function drawLSGeometry(a1, b1, c1, a2, b2, c2) {
+            const canvas = document.getElementById('lsGeometryCanvas'); if(!canvas) return; const ctx = canvas.getContext('2d');
+            const size = canvas.parentElement.clientWidth; canvas.width = size * window.devicePixelRatio; canvas.height = size * window.devicePixelRatio; ctx.scale(window.devicePixelRatio, window.devicePixelRatio); canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+            const center = size / 2; const scale = size / 12;
+
+            ctx.fillStyle = '#f5f5f7'; ctx.fillRect(0, 0, size, size);
+            ctx.strokeStyle = '#e5e5e7'; ctx.lineWidth = 1;
+            for(let i = -6; i <= 6; i++) { ctx.beginPath(); ctx.moveTo(center + i*scale, 0); ctx.lineTo(center + i*scale, size); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, center + i*scale); ctx.lineTo(size, center + i*scale); ctx.stroke(); }
+            ctx.strokeStyle = '#d2d2d7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(center, 0); ctx.lineTo(center, size); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, center); ctx.lineTo(size, center); ctx.stroke();
+
+            // 畫直線函數: ax + by = c
+            function drawLine(a, b, c, color) {
+                ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.beginPath();
+                if (b !== 0) {
+                    const x1 = -6; const y1 = (c - a * x1) / b;
+                    const x2 = 6; const y2 = (c - a * x2) / b;
+                    ctx.moveTo(center + x1*scale, center - y1*scale); ctx.lineTo(center + x2*scale, center - y2*scale);
+                } else if (a !== 0) {
+                    const x = c / a;
+                    ctx.moveTo(center + x*scale, 0); ctx.lineTo(center + x*scale, size);
+                }
+                ctx.stroke();
+            }
+
+            drawLine(a1, b1, c1, '#ef4444'); // L1 紅
+            drawLine(a2, b2, c2, '#0071e3'); // L2 藍
+        }
+
+        function loadLSQuiz() {
+            document.getElementById('lsq-expl-box').classList.add('hidden');
+            currentLSQuiz = LS_QUIZ_BANK[Math.floor(Math.random() * LS_QUIZ_BANK.length)];
+            
+            const qDiv = document.getElementById('lsq-question'); qDiv.innerHTML = currentLSQuiz.q;
+            const optBox = document.getElementById('lsq-options-box'); optBox.innerHTML = "";
+
+            currentLSQuiz.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "p-3 rounded-xl border border-gray-200 text-xs font-semibold text-left hover:bg-gray-50 transition-colors";
+                btn.innerHTML = opt.t;
+                btn.onclick = () => verifyLSAnswer(idx);
+                optBox.appendChild(btn);
+            });
+
+            if (window.renderMathInElement) {
+                renderMathInElement(qDiv, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
+                renderMathInElement(optBox, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
+            }
+        }
+
+        function verifyLSAnswer(idx) {
+            const explBox = document.getElementById('lsq-expl-box');
+            const statusSpan = document.getElementById('lsq-status');
+            const textDiv = document.getElementById('lsq-expl-text');
+
+            explBox.classList.remove('hidden');
+            const isCorrect = currentLSQuiz.options[idx].c;
+
+            if (isCorrect) {
+                statusSpan.className = "text-green-600 font-bold block text-sm mb-1"; statusSpan.innerText = "完全正確！邏輯無懈可擊 🎯";
+            } else {
+                statusSpan.className = "text-red-600 font-bold block text-sm mb-1"; statusSpan.innerText = "小心陷阱！再想想看矩陣的方向性 ⚠️";
+            }
+
+            textDiv.innerHTML = currentLSQuiz.expl;
+            if (window.renderMathInElement) {
+                renderMathInElement(textDiv, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
+            }
         }
     </script>
 </body>
