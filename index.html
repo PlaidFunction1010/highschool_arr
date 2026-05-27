@@ -397,6 +397,82 @@
 
     </div>
 </section>
+            <section id="view-reflection" class="view-section w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                <div class="apple-card p-6 bg-white">
+                    <h3 class="text-lg font-bold mb-1">鏡射變換控制台</h3>
+                    <p class="text-xs text-gray-400 mb-6">微調對稱軸 $L$ 的傾斜角度 $\theta$，連續點擊 $n$ 次方觀測空間在鏡面兩側的翻轉週期性。</p>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <span>鏡射軸角度 (θ)</span>
+                            <span id="ref-angle-display" class="font-bold text-[#0071e3]">45°</span>
+                        </div>
+                        <input id="slider-ref-angle" type="range" min="0" max="180" step="15" value="45" class="w-full accent-[#0071e3]" oninput="updateReflectionLab()">
+                        <div class="flex justify-between text-[10px] text-gray-400 mt-1">
+                            <span>0° (X軸)</span><span>45° (y=x)</span><span>90° (Y軸)</span><span>135°</span><span>180°</span>
+                        </div>
+                    </div>
+    
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex items-center justify-between mb-4">
+                        <div>
+                            <span class="text-xs font-bold text-gray-700 block">複合變換次數 (n 次方)</span>
+                            <span id="ref-period-hint" class="text-[10px] text-gray-400 font-medium">當前狀態：奇數次（翻轉）</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center font-bold text-sm hover:bg-gray-50" onclick="adjustRefN(-1)">-</button>
+                            <span id="ref-n-display" class="w-8 text-center font-mono font-bold text-base text-[#0071e3]">1</span>
+                            <button class="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center font-bold text-sm hover:bg-gray-50" onclick="adjustRefN(1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 rounded-xl text-xs transition-colors" onclick="resetRefN()">
+                        重設次數 (n = 1)
+                    </button>
+                </div>
+    
+                <div class="apple-card p-6 bg-white flex-grow flex flex-col justify-between gap-4">
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">鏡射矩陣代數特徵分析</h4>
+                        
+                        <div class="mb-3 p-3 bg-gray-50 rounded-xl">
+                            <span class="text-[10px] font-bold text-gray-500 block mb-1">【特徵一】當前矩陣 $M_{\theta}^n$ 表示式</span>
+                            <div id="ref-matrix-math" class="text-center py-1"></div>
+                        </div>
+    
+                        <div class="mb-3 p-3 bg-gray-50 rounded-xl">
+                            <span class="text-[10px] font-bold text-gray-500 block mb-1">【特徵二】矩陣行列式值 (Determinant)</span>
+                            <div id="ref-det-math" class="text-center py-1"></div>
+                        </div>
+    
+                        <div class="mb-3 p-3 bg-gray-50 rounded-xl">
+                            <span class="text-[10px] font-bold text-gray-500 block mb-1">【特徵三】鏡射的反方陣 (Inverse)</span>
+                            <div id="ref-inv-math" class="text-center py-1"></div>
+                        </div>
+                    </div>
+    
+                    <div id="ref-area-expl" class="p-3 bg-red-50/40 border border-red-100/20 rounded-xl text-[11px] leading-relaxed text-gray-600">
+                        </div>
+                </div>
+            </div>
+    
+            <div class="lg:col-span-7 apple-card p-6 bg-white flex flex-col items-center justify-center min-h-[450px]">
+                <div class="w-full flex justify-between items-center mb-4">
+                    <span class="text-sm font-bold text-gray-700">鏡射對稱映射 ($M_{\theta}^n$ 翻轉軌跡)</span>
+                    <div class="flex gap-4 text-xs font-semibold">
+                        <span class="text-red-500">■ 變換後 $i(1,0)$</span>
+                        <span class="text-blue-500">■ 變換後 $j(0,1)$</span>
+                    </div>
+                </div>
+                <div class="relative w-full max-w-md aspect-square bg-[#f5f5f7] rounded-xl overflow-hidden border border-gray-100">
+                    <canvas id="reflectionCanvas" class="w-full h-full"></canvas>
+                </div>
+            </div>
+    
+        </div>
+    </section>
 
     </main>
 
@@ -880,6 +956,139 @@
             ctx.strokeStyle = '#0071e3'; ctx.lineWidth = 3;
             ctx.beginPath(); ctx.moveTo(center, center); ctx.lineTo(jX, jY); ctx.stroke();
             // 箭頭
+            ctx.fillStyle = '#0071e3'; ctx.beginPath(); ctx.arc(jX, jY, 4, 0, 2*Math.PI); ctx.fill();
+        }
+                // ================== 主題六：鏡射矩陣核心驅動 ==================
+        let refN = 1; // 記錄當前的 n 次方
+        
+        function initReflectionLab() {
+            refN = 1;
+            updateReflectionLab();
+        }
+        
+        function adjustRefN(delta) {
+            refN += delta;
+            if (refN < 1) refN = 1;
+            if (refN > 12) refN = 12;
+            updateReflectionLab();
+        }
+        
+        function resetRefN() {
+            refN = 1;
+            updateReflectionLab();
+        }
+        
+        function updateReflectionLab() {
+            const thetaDeg = parseInt(document.getElementById('slider-ref-angle').value);
+            document.getElementById('ref-angle-display').innerText = `${thetaDeg}°`;
+            document.getElementById('ref-n-display').innerText = refN;
+        
+            const rad = (thetaDeg * Math.PI) / 180;
+            // 鏡射標準矩陣元素為 cos(2θ) 和 sin(2θ)
+            const cos2Theta = Math.cos(2 * rad);
+            const sin2Theta = Math.sin(2 * rad);
+        
+            const hintSpan = document.getElementById('ref-period-hint');
+            const matrixDiv = document.getElementById('ref-matrix-math');
+            const detDiv = document.getElementById('ref-det-math');
+            const invDiv = document.getElementById('ref-inv-math');
+        
+            // 判斷 n 次方的奇偶週期性
+            const isEven = (refN % 2 === 0);
+            
+            if (isEven) {
+                hintSpan.className = "text-[10px] text-green-600 font-bold";
+                hintSpan.innerText = "當前狀態：偶數次（還原恆等映射）";
+                
+                // 偶數次方必為恆等矩陣 I_2
+                katex.render(`(M_{${thetaDeg}^\\circ})^${refN} = I_2 = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}`, matrixDiv);
+                katex.render(`\\det(I_2) = 1`, detDiv);
+                katex.render(`(M_{${thetaDeg}^\\circ}^${refN})^{-1} = I_2`, invDiv);
+            } else {
+                hintSpan.className = "text-[10px] text-red-500 font-bold";
+                hintSpan.innerText = "當前狀態：奇數次（翻轉對稱映射）";
+                
+                // 奇數次方必等於原本的鏡射矩陣
+                katex.render(`(M_{${thetaDeg}^\\circ})^${refN} = M_{${thetaDeg}^\\circ} = \\begin{bmatrix} \\cos ${2*thetaDeg}^\\circ & \\sin ${2*thetaDeg}^\\circ \\\\ \\sin ${2*thetaDeg}^\\circ & -\\cos ${2*thetaDeg}^\\circ \\end{bmatrix} \\approx \\begin{bmatrix} ${cos2Theta.toFixed(2)} & ${sin2Theta.toFixed(2)} \\\\ ${sin2Theta.toFixed(2)} & ${(-cos2Theta).toFixed(2)} \\end{bmatrix}`, matrixDiv);
+                // 奇數次方的 det 為 -1
+                katex.render(`\\det(M_{${thetaDeg}^\\circ}) = (\\cos ${2*thetaDeg}^\\circ)(-\\cos ${2*thetaDeg}^\\circ) - (\\sin ${2*thetaDeg}^\\circ)^2 = -1.00`, detDiv);
+                // 鏡射矩陣的反方陣就是自己本身
+                katex.render(`(M_{${thetaDeg}^\\circ})^{-1} = M_{${thetaDeg}^\\circ} = \\begin{bmatrix} \\cos ${2*thetaDeg}^\\circ & \\sin ${2*thetaDeg}^\\circ \\\\ \\sin ${2*thetaDeg}^\\circ & -\\cos ${2*thetaDeg}^\\circ \\end{bmatrix}`, invDiv);
+            }
+        
+            // 面積與定向性質說明
+            document.getElementById('ref-area-expl').innerHTML = `
+                <span class="font-bold text-red-600 block mb-1">💡 導師講義核心思維引導：</span>
+                鏡射變換最精彩的地方在於 $\\det(M_\\theta) = -1$。決定值為 1 代表<b>圖形面積同樣被固定不變</b>，但負號代表<b>「空間的定向被顛倒（鏡像翻轉）」</b>了！<br>
+                引導學生連續施加變換：翻轉一次（奇數次）圖形倒轉，再翻轉一次（偶數次）立刻完美回彈。因此其反方陣就是自己本身 ($M^{-1} = M$)，這個幾何直覺在多選題中是秒殺盲點的關鍵！
+            `;
+        
+            if(window.renderMathInElement) {
+                renderMathInElement(document.getElementById('ref-area-expl'), { delimiters: [{left: "$", right: "$", display: false}] });
+            }
+        
+            // 依據奇偶狀態傳遞實際映射坐標繪製幾何圖形
+            if (isEven) {
+                drawReflectionGeometry(1, 0, 0, 1, thetaDeg); // I_2 狀態
+            } else {
+                drawReflectionGeometry(cos2Theta, sin2Theta, sin2Theta, -cos2Theta, thetaDeg); // 鏡射變換狀態
+            }
+        }
+        
+        function drawReflectionGeometry(iX_val, iY_val, jX_val, jY_val, thetaDeg) {
+            const canvas = document.getElementById('reflectionCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            const size = canvas.parentElement.clientWidth;
+            canvas.width = size * window.devicePixelRatio;
+            canvas.height = size * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+            
+            const center = size / 2;
+            const radius = size * 0.35;
+        
+            // 背景
+            ctx.fillStyle = '#f5f5f7'; ctx.fillRect(0, 0, size, size);
+        
+            // 網格線
+            ctx.strokeStyle = '#e5e5e7'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(center, 0); ctx.lineTo(center, size); ctx.moveTo(0, center); ctx.lineTo(size, center); ctx.stroke();
+        
+            // 繪製「鏡射對稱軸 L」（虛線表示鏡面）
+            const axisRad = (thetaDeg * Math.PI) / 180;
+            const len = size * 0.45;
+            ctx.strokeStyle = '#8e8e93'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); // 設定為虛線
+            ctx.beginPath();
+            ctx.moveTo(center - Math.cos(axisRad)*len, center + Math.sin(axisRad)*len);
+            ctx.lineTo(center + Math.cos(axisRad)*len, center - Math.sin(axisRad)*len);
+            ctx.stroke();
+            ctx.setLineDash([]); // 恢復實線
+        
+            // 標記鏡面文字
+            ctx.fillStyle = '#8e8e93'; ctx.font = '10px monospace';
+            ctx.fillText(`軸 L (${thetaDeg}°)`, center + Math.cos(axisRad)*(len-20) + 10, center - Math.sin(axisRad)*(len-20) - 10);
+        
+            // 映射後的基底向量坐標 (注意網頁 Canvas 坐標系 y 軸向下)
+            const iX = center + iX_val * radius;
+            const iY = center - iY_val * radius;
+            const jX = center + jX_val * radius;
+            const jY = center - jY_val * radius;
+        
+            // 陰影面積
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.05)';
+            ctx.beginPath(); ctx.moveTo(center, center); ctx.lineTo(iX, iY); ctx.lineTo(iX + (jX - center), iY + (jY - center)); ctx.lineTo(jX, jY); ctx.closePath(); ctx.fill();
+        
+            // 畫向量 i (紅色)
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(center, center); ctx.lineTo(iX, iY); ctx.stroke();
+            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(iX, iY, 4, 0, 2*Math.PI); ctx.fill();
+        
+            // 畫向量 j (藍色)
+            ctx.strokeStyle = '#0071e3'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(center, center); ctx.lineTo(jX, jY); ctx.stroke();
             ctx.fillStyle = '#0071e3'; ctx.beginPath(); ctx.arc(jX, jY, 4, 0, 2*Math.PI); ctx.fill();
         }
     </script>
