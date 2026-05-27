@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>
         body {
             background-color: #f5f5f7;
@@ -54,7 +54,7 @@
         
         <section id="view-lobby" class="view-section active w-full">
             <div class="text-center mb-12">
-                <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3">二階方陣</h1>
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3">二階方陣核心實驗室</h1>
                 <p class="text-gray-500 text-lg">透過動態視覺與即時反饋，解構抽象的線性代數。</p>
             </div>
             
@@ -222,17 +222,16 @@
     </main>
 
     <footer class="max-w-5xl w-full mx-auto text-center py-6 text-xs text-gray-400 mt-12 border-t border-gray-100">
-        數位互動網頁教案 • 開發專用
+        符合 Apple 極簡規範之數位互動網頁教案 • 開發專用
     </footer>
 
     <script>
-        // 1. 全域狀態管理與題庫數據庫
         let timerInterval = null;
         let quizSeconds = 0;
-        let activeQuizSet = []; // 存放當前抽出的 5 題
+        let activeQuizSet = [];
         let quizSubmitted = false;
 
-        // 核心題庫：未來老師可以在這裡無限增加題目
+        // 核心題庫數據庫
         const QUESTION_BANK = [
             {
                 id: 1,
@@ -292,7 +291,7 @@
                 id: 10,
                 title: "若 $A, B$ 皆為二階「對角矩陣」（即主對角線以外的元素皆為 0），則 $AB = BA$ 恆成立。",
                 ans: "O",
-                expl: "設 $A = \\begin{bmatrix} x_1 & 0 \\\\ 0 & y_1 \\end{bmatrix}$，$B = \\begin{bmatrix} x_2 & 0 \\\\ 0 & y_2 \end{bmatrix}$。則 $AB = \\begin{bmatrix} x_1x_2 & 0 \\\\ 0 & y_1y_2 \\end{bmatrix}$，而 $BA = \\begin{bmatrix} x_2x_1 & 0 \\\\ 0 & y_2y_1 \\end{bmatrix}$。因為實數乘法具交換律，所以兩個對角矩陣相乘恆滿足交換律。"
+                expl: "設 $A = \\begin{bmatrix} x_1 & 0 \\\\ 0 & y_1 \\end{bmatrix}$項目，$B = \\begin{bmatrix} x_2 & 0 \\\\ 0 & y_2 \\end{bmatrix}$。則 $AB = \\begin{bmatrix} x_1x_2 & 0 \\\\ 0 & y_1y_2 \\end{bmatrix}$，而 $BA = \\begin{bmatrix} x_2x_1 & 0 \\\\ 0 & y_2y_1 \\end{bmatrix}$。因為實數乘法具交換律，所以兩個對角矩陣相乘恆滿足交換律。"
             },
             {
                 id: 11,
@@ -308,9 +307,8 @@
             }
         ];
 
-        // 2. 虛擬路由分流
         function switchView(viewId) {
-            clearInterval(timerInterval); // 先關閉計時器防止跑馬燈
+            clearInterval(timerInterval);
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`view-${viewId}`).classList.add('active');
             
@@ -329,7 +327,7 @@
             document.getElementById(id).classList.toggle('hidden');
         }
 
-        // ================== 主題三：是非題邏輯引擎 ==================
+        // ================== 主題三：已修復的題目渲染引擎 ==================
         function startNewQuizChallenge() {
             quizSeconds = 0;
             quizSubmitted = false;
@@ -337,11 +335,10 @@
             document.getElementById('submit-quiz-btn').disabled = false;
             document.getElementById('submit-quiz-btn').className = "apple-btn px-8 py-3 rounded-2xl text-sm font-semibold tracking-wide shadow-md";
 
-            // 隨機從題庫洗牌並抽出 5 題
+            // 洗牌抽 5 題
             const shuffled = [...QUESTION_BANK].sort(() => 0.5 - Math.random());
             activeQuizSet = shuffled.slice(0, 5);
 
-            // 動態建構 DOM 結構
             const container = document.getElementById('quiz-questions-container');
             container.innerHTML = "";
 
@@ -352,7 +349,7 @@
                 card.innerHTML = `
                     <div class="mb-4">
                         <div class="text-xs font-semibold text-gray-400 mb-1">第 ${index + 1} 題</div>
-                        <div class="text-base text-gray-800 font-medium tracking-wide" id="q-text-${index}"></div>
+                        <div class="text-base text-gray-800 font-medium tracking-wide min-h-[1.5rem]" id="q-text-${index}"></div>
                     </div>
                     <div class="flex gap-4 items-center">
                         <button id="btn-${index}-O" class="flex-1 py-2 rounded-xl border border-gray-200 text-sm font-bold transition-all hover:bg-gray-50" onclick="selectUserAns(${index}, 'O')">O (正確)</button>
@@ -365,12 +362,21 @@
                 `;
                 container.appendChild(card);
                 
-                // 動態渲染本題的數學符號
-                katex.render(item.title, document.getElementById(`q-text-${index}`));
-                item.userSelected = null; // 初始化使用者未填寫
+                // 【關鍵 Bug 修復點】：在元素 append 進 DOM 後立即精準渲染，防止時間差空白
+                const targetTextNode = document.getElementById(`q-text-${index}`);
+                if (window.katex) {
+                    try {
+                        katex.render(item.title, targetTextNode);
+                    } catch (err) {
+                        targetTextNode.innerText = item.title;
+                    }
+                } else {
+                    targetTextNode.innerText = item.title;
+                }
+                
+                item.userSelected = null;
             });
 
-            // 啟動正計時器
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 quizSeconds++;
@@ -381,10 +387,8 @@
         }
 
         function selectUserAns(qIndex, choice) {
-            if (quizSubmitted) return; // 提交後鎖定無法修改
-            
+            if (quizSubmitted) return;
             activeQuizSet[qIndex].userSelected = choice;
-
             const btnO = document.getElementById(`btn-${qIndex}-O`);
             const btnX = document.getElementById(`btn-${qIndex}-X`);
 
@@ -398,14 +402,13 @@
         }
 
         function evaluateQuizAnswers() {
-            // 檢查是否有未答題目
             const unans = activeQuizSet.some(q => q.userSelected === null);
             if(unans) {
                 alert("同學，還有題目還沒作答唷！請全部填完再點擊提交。");
                 return;
             }
 
-            clearInterval(timerInterval); // 停止計時
+            clearInterval(timerInterval);
             quizSubmitted = true;
             document.getElementById('submit-quiz-btn').disabled = true;
             document.getElementById('submit-quiz-btn').className = "bg-gray-200 text-gray-400 px-8 py-3 rounded-2xl text-sm font-semibold tracking-wide cursor-not-allowed";
@@ -419,18 +422,19 @@
                 explBox.classList.remove('hidden');
 
                 if (item.userSelected === item.ans) {
-                    card.style.border = "1px solid rgba(34, 197, 94, 0.4)"; // 綠色
+                    card.style.border = "1px solid rgba(34, 197, 94, 0.4)";
                     statusSpan.className = "text-green-600 font-bold block mb-1 text-sm";
                     statusSpan.innerText = "餅乾給妳！答對了 🎉";
                 } else {
-                    card.style.border = "1px solid rgba(239, 68, 68, 0.4)"; // 紅色
+                    card.style.border = "1px solid rgba(239, 68, 68, 0.4)";
                     statusSpan.className = "text-red-600 font-bold block mb-1 text-sm";
                     statusSpan.innerText = `踩到雷區！正確答案為【 ${item.ans} 】`;
                 }
 
-                // 渲染 KaTeX 詳解
                 mathDiv.innerHTML = item.expl;
-                renderMathInElement(mathDiv);
+                if(window.renderMathInElement) {
+                    renderMathInElement(mathDiv);
+                }
             });
         }
 
@@ -513,7 +517,7 @@
             const p0 = transform(0, 0); const pI = transform(1, 0); const pJ = transform(0, 1); const pIJ = transform(1, 1);
             ctx.fillStyle = (a*d-b*c === 0) ? 'rgba(239, 68, 68, 0.2)' : 'rgba(0, 113, 227, 0.1)';
             ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pI.x, pI.y); ctx.lineTo(pIJ.x, pIJ.y); ctx.lineTo(pJ.x, pJ.y); ctx.closePath(); ctx.fill();
-            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pI.x, pI.y); ctx.stroke();
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pI.x, pI.y); stroke();
             ctx.strokeStyle = '#0071e3'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pJ.x, pJ.y); ctx.stroke();
         }
     </script>
