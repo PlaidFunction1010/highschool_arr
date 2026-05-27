@@ -231,7 +231,6 @@
         let activeQuizSet = [];
         let quizSubmitted = false;
 
-        // 核心題庫數據庫
         const QUESTION_BANK = [
             {
                 id: 1,
@@ -255,7 +254,7 @@
                 id: 4,
                 title: "設 $A, B, C$ 為同階方陣且 $A \\neq O$（零矩陣）。若 $AB = AC$，則 $B = C$ 恆成立。",
                 ans: "X",
-                expl: "矩陣不具備一般消去律。由 $AB = AC$ 可得 $A(B-C) = O$，當 $A$ 為不可逆矩陣時，即使 $A \\neq O$，仍可找到非零矩陣使乘積為零（存在零因子），故 $B=C$ 未必成立。"
+                expl: "矩陣不具備一般消去律。由 $AB = AC$ 可得 $A(B-C) = O$，當 $A$ 為不可逆矩陣時，即使 $A \\neq O$，仍可找到非零矩陣使乘積為零（存在零因子），故 $B-C$ 未必為 $O$，即 $B=C$ 未必成立。"
             },
             {
                 id: 5,
@@ -291,7 +290,7 @@
                 id: 10,
                 title: "若 $A, B$ 皆為二階「對角矩陣」（即主對角線以外的元素皆為 0），則 $AB = BA$ 恆成立。",
                 ans: "O",
-                expl: "設 $A = \\begin{bmatrix} x_1 & 0 \\\\ 0 & y_1 \\end{bmatrix}$項目，$B = \\begin{bmatrix} x_2 & 0 \\\\ 0 & y_2 \\end{bmatrix}$。則 $AB = \\begin{bmatrix} x_1x_2 & 0 \\\\ 0 & y_1y_2 \\end{bmatrix}$，而 $BA = \\begin{bmatrix} x_2x_1 & 0 \\\\ 0 & y_2y_1 \\end{bmatrix}$。因為實數乘法具交換律，所以兩個對角矩陣相乘恆滿足交換律。"
+                expl: "設 $A = \\begin{bmatrix} x_1 & 0 \\\\ 0 & y_1 \\end{bmatrix}$，$B = \\begin{bmatrix} x_2 & 0 \\\\ 0 & y_2 \\end{bmatrix}$。則 $AB = \\begin{bmatrix} x_1x_2 & 0 \\\\ 0 & y_1y_2 \\end{bmatrix}$，而 $BA = \\begin{bmatrix} x_2x_1 & 0 \\\\ 0 & y_2y_1 \\end{bmatrix}$。因為實數乘法具交換律，所以兩個對角矩陣相乘恆滿足交換律。"
             },
             {
                 id: 11,
@@ -327,7 +326,7 @@
             document.getElementById(id).classList.toggle('hidden');
         }
 
-        // ================== 主題三：已修復的題目渲染引擎 ==================
+        // ================== 主題三：完美修復的中文/LaTeX混合渲染引擎 ==================
         function startNewQuizChallenge() {
             quizSeconds = 0;
             quizSubmitted = false;
@@ -335,7 +334,6 @@
             document.getElementById('submit-quiz-btn').disabled = false;
             document.getElementById('submit-quiz-btn').className = "apple-btn px-8 py-3 rounded-2xl text-sm font-semibold tracking-wide shadow-md";
 
-            // 洗牌抽 5 題
             const shuffled = [...QUESTION_BANK].sort(() => 0.5 - Math.random());
             activeQuizSet = shuffled.slice(0, 5);
 
@@ -349,7 +347,7 @@
                 card.innerHTML = `
                     <div class="mb-4">
                         <div class="text-xs font-semibold text-gray-400 mb-1">第 ${index + 1} 題</div>
-                        <div class="text-base text-gray-800 font-medium tracking-wide min-h-[1.5rem]" id="q-text-${index}"></div>
+                        <div class="text-base text-gray-800 font-medium tracking-wide leading-relaxed" id="q-text-${index}">${item.title}</div>
                     </div>
                     <div class="flex gap-4 items-center">
                         <button id="btn-${index}-O" class="flex-1 py-2 rounded-xl border border-gray-200 text-sm font-bold transition-all hover:bg-gray-50" onclick="selectUserAns(${index}, 'O')">O (正確)</button>
@@ -361,21 +359,18 @@
                     </div>
                 `;
                 container.appendChild(card);
-                
-                // 【關鍵 Bug 修復點】：在元素 append 進 DOM 後立即精準渲染，防止時間差空白
-                const targetTextNode = document.getElementById(`q-text-${index}`);
-                if (window.katex) {
-                    try {
-                        katex.render(item.title, targetTextNode);
-                    } catch (err) {
-                        targetTextNode.innerText = item.title;
-                    }
-                } else {
-                    targetTextNode.innerText = item.title;
-                }
-                
                 item.userSelected = null;
             });
+
+            // 【核心優化】：整顆網格容器塞完後，直接呼叫 Auto-render 擴充套件，完美消滅 $ 與 \neq 符號
+            if (window.renderMathInElement) {
+                renderMathInElement(container, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+            }
 
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
@@ -433,7 +428,12 @@
 
                 mathDiv.innerHTML = item.expl;
                 if(window.renderMathInElement) {
-                    renderMathInElement(mathDiv);
+                    renderMathInElement(mathDiv, {
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true},
+                            {left: "$", right: "$", display: false}
+                        ]
+                    });
                 }
             });
         }
@@ -517,7 +517,7 @@
             const p0 = transform(0, 0); const pI = transform(1, 0); const pJ = transform(0, 1); const pIJ = transform(1, 1);
             ctx.fillStyle = (a*d-b*c === 0) ? 'rgba(239, 68, 68, 0.2)' : 'rgba(0, 113, 227, 0.1)';
             ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pI.x, pI.y); ctx.lineTo(pIJ.x, pIJ.y); ctx.lineTo(pJ.x, pJ.y); ctx.closePath(); ctx.fill();
-            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pI.x, pI.y); stroke();
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pI.x, pI.y); ctx.stroke();
             ctx.strokeStyle = '#0071e3'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(pJ.x, pJ.y); ctx.stroke();
         }
     </script>
