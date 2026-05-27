@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Style 數位數學教案：矩陣篇8</title>
+    <title>數位數學教案：矩陣篇</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -46,7 +46,7 @@
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
 
     <header class="max-w-5xl w-full mx-auto flex justify-between items-center py-4 mb-8">
-        <div class="text-xl font-semibold tracking-tight cursor-pointer" onclick="switchView('lobby')"> MathEd Studio</div>
+        <div class="text-xl font-semibold tracking-tight cursor-pointer" onclick="switchView('lobby')">⊞ Matrix Studio</div>
         <button id="back-btn" class="hidden text-sm text-[#0071e3] font-normal hover:underline" onclick="switchView('lobby')">← 返回大廳</button>
     </header>
 
@@ -54,7 +54,7 @@
         
         <section id="view-lobby" class="view-section active w-full">
             <div class="text-center mb-12">
-                <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3">二階方陣核心實驗室</h1>
+                <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3">矩陣實驗室</h1>
                 <p class="text-gray-500 text-lg">透過動態視覺與即時反饋，解構抽象的線性代數。</p>
             </div>
             
@@ -88,6 +88,24 @@
                         <div class="text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-2">主題四</div>
                         <h2 class="text-xl font-bold mb-3">反方陣與二元一次方程組</h2>
                         <p class="text-gray-500 text-xs leading-relaxed mb-6">探究矩陣方程 $AX=B$ 的左乘移項法則，結合 2D 幾何線條動態演示「恰有一解、無解、無限多解」之克拉瑪幾何型態。</p>
+                    </div>
+                    <div class="text-[#0071e3] text-xs font-medium flex items-center">開始實驗 <span class="ml-1">→</span></div>
+                </div>
+                <div class="apple-card p-6 cursor-pointer flex flex-col justify-between" onclick="switchView('rotation')">
+               <div class="apple-card p-6 cursor-pointer flex flex-col justify-between" onclick="switchView('rotation')">
+                <div>
+                    <div class="text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-2">主題五</div>
+                    <h2 class="text-xl font-bold mb-3">旋轉矩陣與幾何變換</h2>
+                    <p class="text-gray-500 text-xs leading-relaxed mb-6">探究向量旋轉與其 $n$ 次方、反方陣、面積不變性與行列式值 $det(R_\theta)=1$ 的代數連結。</p>
+                </div>
+                <div class="text-[#0071e3] text-xs font-medium flex items-center">開始實驗 <span class="ml-1">→</span></div>
+            </div>
+
+                <div class="apple-card p-6 cursor-pointer flex flex-col justify-between" onclick="switchView('reflection')">
+                    <div>
+                        <div class="text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-2">主題六</div>
+                        <h2 class="text-xl font-bold mb-3">鏡射矩陣與對稱性質</h2>
+                        <p class="text-gray-500 text-xs leading-relaxed mb-6">操縱鏡射軸動態觀測空間的翻轉定向，解構 $n$ 次方奇偶週期性、反方陣與 $det(M_\theta)=-1$ 之特徵。</p>
                     </div>
                     <div class="text-[#0071e3] text-xs font-medium flex items-center">開始實驗 <span class="ml-1">→</span></div>
                 </div>
@@ -308,8 +326,8 @@
 
     </main>
 
-    <footer class="max-w-5xl w-full mx-auto text-center py-6 text-xs text-gray-400 mt-12 border-t border-gray-100">
-        符合 Apple 極簡規範之數位互動網頁教案 • 開發專用
+       <footer class="max-w-5xl w-full mx-auto text-center py-6 text-xs text-gray-400 mt-12 border-t border-gray-100">
+        數位互動網頁
     </footer>
 
     <script>
@@ -370,6 +388,8 @@
                 if(viewId === 'inverse') { initInversePage(); }
                 if(viewId === 'quiz') { startNewQuizChallenge(); }
                 if(viewId === 'linear-systems') { initLinearSystemsPage(); }
+                if(viewId === 'rotation') { initRotationLab(); }
+                if(viewId === 'reflection') { initReflectionLab(); }
             }
         }
 
